@@ -17,10 +17,19 @@ class RandomChar extends Component {
 
   componentDidMount() {
     this.updateChar();
+    // this.timerId = setInterval(this.updateChar, 5000);
   }
 
+  componentWillUnmount() {
+    clearInterval(this.timerId);
+  }
+
+  onCharLoading = () => {
+    this.setState({ loading: true, error: false });
+  };
+
   onCharLoaded = (char) => {
-    this.setState({ char, loading: false });
+    this.setState({ char, loading: false, error: false });
   };
 
   onError = () => {
@@ -31,6 +40,7 @@ class RandomChar extends Component {
   };
 
   updateChar = () => {
+    this.onCharLoading();
     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
     this.marvelService.getCharacter(id).then(this.onCharLoaded).catch(this.onError);
   };

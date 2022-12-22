@@ -39,12 +39,15 @@ class MarvelService {
     if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
       thumbnail = marvelIgm;
     }
+
     return {
+      id: char.id,
       name: char.name,
       description,
       thumbnail,
       homepage: char.urls[0].url,
       wiki: char.urls[1].url,
+      comics: char.comics.items.slice(0, 10),
     };
   };
 }
