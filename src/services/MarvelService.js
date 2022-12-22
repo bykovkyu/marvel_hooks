@@ -3,6 +3,8 @@ import marvelIgm from '../resources/img/marvel.jpg';
 class MarvelService {
   _apiBase = 'https://gateway.marvel.com:443/v1/public/';
   _apiKey = 'apikey=7bd4d4fb398e1cc8e6c3c7b2986fa573';
+  _baseOffset = 360;
+  _baseLimit = 9;
 
   getResource = async (url) => {
     let res = await fetch(url);
@@ -14,10 +16,11 @@ class MarvelService {
     return await res.json();
   };
 
-  getAllCharacters = async (offset) => {
+  getAllCharacters = async (offset = this._baseOffset, limit = this._baseLimit) => {
     const res = await this.getResource(
-      `${this._apiBase}characters?limit=9&offset=${offset}&${this._apiKey}`
+      `${this._apiBase}characters?limit=${limit}&offset=${offset}&${this._apiKey}`
     );
+    console.log('request');
     return res.data.results.map(this._transformCharacter);
   };
 
@@ -40,9 +43,14 @@ class MarvelService {
       thumbnail = marvelIgm;
     }
 
+    let name = char.name;
+    if (name.length > 30) {
+      name = `${name.match(/.{25}.*?\b/)}...`;
+    }
+
     return {
       id: char.id,
-      name: char.name,
+      name,
       description,
       thumbnail,
       homepage: char.urls[0].url,
