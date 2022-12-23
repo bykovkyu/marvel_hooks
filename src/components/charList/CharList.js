@@ -26,15 +26,13 @@ class CharList extends Component {
   }
 
   onFirstLoading = () => {
-    console.log('Mounted');
     let limitInLS = +localStorage.getItem('limit');
     if (limitInLS > 100) {
       localStorage.setItem('limit', 100);
       limitInLS = 100;
     }
-    console.log(limitInLS);
-    const { startOffset, offset } = this.state;
 
+    const { startOffset, offset } = this.state;
     if (limitInLS && limitInLS > 9 && startOffset === offset) {
       this.onRequest(offset, limitInLS);
     } else {
@@ -44,17 +42,11 @@ class CharList extends Component {
     window.addEventListener('scroll', this.onRequestByScroll);
   };
 
-  componentDidUpdate() {
-    console.log('Updated');
-  }
-
   componentWillUnmount() {
     window.removeEventListener('scroll', this.onRequestByScroll);
   }
 
   onRequest = (offset, limit) => {
-    console.log('onRequest');
-
     this.onCharListLoading();
     this.marvelService
       .getAllCharacters(offset, limit)
@@ -70,6 +62,7 @@ class CharList extends Component {
     let ended = false;
     if (newCharList.length < limit) {
       ended = true;
+      window.removeEventListener('scroll', this.onRequestByScroll);
     }
 
     this.setState(({ charList }) => {
@@ -105,6 +98,14 @@ class CharList extends Component {
     }
   };
 
+  onResetNumberOfCharacters = () => {
+    localStorage.removeItem('limit');
+    this.setState((state) => ({
+      offset: state.startOffset + state.limit,
+      charList: state.charList.slice(0, state.limit),
+    }));
+  };
+
   render() {
     const { charList: chars, loading, error, newItemLoading, offset, charEnded } = this.state;
 
@@ -119,6 +120,17 @@ class CharList extends Component {
 
     return (
       <div className='char__list'>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+          <button
+            className='button button__main button__long'
+            style={{ margin: '0' }}
+            onClick={this.onResetNumberOfCharacters}>
+            <div className='inner'>reset number of characters</div>
+          </button>
+          <div style={{ fontSize: '30px', alignSelf: 'center' }}>
+            Number of characters: {chars.length}
+          </div>
+        </div>
         {errorMessage}
         {spinner}
         {content}

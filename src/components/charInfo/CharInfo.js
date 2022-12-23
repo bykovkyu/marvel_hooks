@@ -63,7 +63,12 @@ class CharInfo extends Component {
     const content = !(loading || error || !char) ? <View char={char} /> : null;
 
     return (
-      <div className='char__info'>
+      <div
+        className='char__info'
+        style={{
+          maxHeight: `${document.documentElement.clientHeight - 30}px`,
+          overflow: 'auto',
+        }}>
         {skeleton}
         {errorMessage}
         {spinner}
@@ -128,6 +133,10 @@ const Comics = ({ comics }) => {
     );
   });
   return <>{content}</>;
+};
+
+Comics.propTypes = {
+  comics: PropTypes.array,
 };
 
 export default CharInfo;
