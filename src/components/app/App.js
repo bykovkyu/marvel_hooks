@@ -12,8 +12,16 @@ class App extends Component {
     selectedChar: null,
   };
 
-  onCharSelected = (id) => {
+  onFocusChar = (selectedElem, myRefs) => {
+    myRefs = myRefs.filter((item) => item !== null);
+    myRefs.forEach((elem) => elem.classList.remove('char__item_selected'));
+    selectedElem.classList.add('char__item_selected');
+    selectedElem.focus();
+  };
+
+  onCharSelected = (id, selectedElem, myRefs) => {
     this.setState({ selectedChar: id });
+    this.onFocusChar(selectedElem, myRefs);
   };
 
   render() {

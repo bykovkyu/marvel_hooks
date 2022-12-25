@@ -19,11 +19,34 @@ class CharList extends Component {
     limit: 9,
   };
 
+  charsRefs = [];
+
   marvelService = new MarvelService();
 
   componentDidMount() {
     this.onFirstLoading();
+    console.log('Mount', this.charsRefs);
+    console.log('Mount', this.state.charList);
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onRequestByScroll);
+  }
+
+  componentDidUpdate() {
+    // this.myRefs = [];
+    // if (this.state.flag) {
+    //   const filterRefs = [...this.charsRefs].filter((item) => item !== null);
+    //   filterRefs.forEach((elem) => elem.classList.add('char__item_selected'));
+    // }
+    this.render();
+    console.log('Update', this.charsRefs);
+    console.log('Update', this.state.charList);
+  }
+
+  setCharRef = (elem) => {
+    this.charsRefs.push(elem);
+  };
 
   onFirstLoading = () => {
     let limitInLS = +localStorage.getItem('limit');
@@ -41,10 +64,6 @@ class CharList extends Component {
 
     window.addEventListener('scroll', this.onRequestByScroll);
   };
-
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.onRequestByScroll);
-  }
 
   onRequest = (offset, limit) => {
     this.onCharListLoading();
@@ -98,8 +117,17 @@ class CharList extends Component {
     }
   };
 
-  onResetNumberOfCharacters = () => {
+  onResetNumberOfCharacters = (newRefs) => {
     localStorage.removeItem('limit');
+
+    // this.charsRefs = (() => {
+    //   const newArr = this.charsRefs.slice(0, this.state.limit);
+    //   console.log('newArr', newArr);
+    //   return newArr;
+    // })();
+
+    this.charsRefs = newRefs;
+
     this.setState((state) => ({
       offset: state.startOffset + state.limit,
       charList: state.charList.slice(0, state.limit),
@@ -115,6 +143,8 @@ class CharList extends Component {
       <List
         chars={chars}
         onCharSelected={this.props.onCharSelected}
+        setCharRef={this.setCharRef}
+        myRefs={this.charsRefs}
       />
     ) : null;
 
@@ -124,7 +154,9 @@ class CharList extends Component {
           <button
             className='button button__main button__long'
             style={{ margin: '0' }}
-            onClick={this.onResetNumberOfCharacters}>
+            onClick={() => {
+              this.onResetNumberOfCharacters(this.charsRefs.slice(0, 9));
+            }}>
             <div className='inner'>reset number of characters</div>
           </button>
           <div style={{ fontSize: '30px', alignSelf: 'center' }}>
@@ -152,13 +184,22 @@ CharList.propTypes = {
   onCharSelected: PropTypes.func,
 };
 
-const List = ({ chars, onCharSelected }) => {
+const List = ({ chars, onCharSelected, setCharRef, myRefs }) => {
   const content = chars.map((char) => {
     const { id, name, thumbnail } = char;
     return (
       <li
         key={id}
-        onClick={() => onCharSelected(id)}
+        tabIndex={0}
+        ref={setCharRef}
+        onClick={(e) => onCharSelected(id, e.currentTarget, myRefs)}
+        onKeyPress={(e) => {
+          if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            onCharSelected(id, e.currentTarget, myRefs);
+            console.log(myRefs);
+          }
+        }}
         className='char__item'>
         <img
           src={thumbnail}
