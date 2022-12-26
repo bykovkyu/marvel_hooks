@@ -25,23 +25,10 @@ class CharList extends Component {
 
   componentDidMount() {
     this.onFirstLoading();
-    console.log('Mount', this.charsRefs);
-    console.log('Mount', this.state.charList);
   }
 
   componentWillUnmount() {
     window.removeEventListener('scroll', this.onRequestByScroll);
-  }
-
-  componentDidUpdate() {
-    // this.myRefs = [];
-    // if (this.state.flag) {
-    //   const filterRefs = [...this.charsRefs].filter((item) => item !== null);
-    //   filterRefs.forEach((elem) => elem.classList.add('char__item_selected'));
-    // }
-    this.render();
-    console.log('Update', this.charsRefs);
-    console.log('Update', this.state.charList);
   }
 
   setCharRef = (elem) => {
@@ -117,23 +104,6 @@ class CharList extends Component {
     }
   };
 
-  onResetNumberOfCharacters = (newRefs) => {
-    localStorage.removeItem('limit');
-
-    // this.charsRefs = (() => {
-    //   const newArr = this.charsRefs.slice(0, this.state.limit);
-    //   console.log('newArr', newArr);
-    //   return newArr;
-    // })();
-
-    this.charsRefs = newRefs;
-
-    this.setState((state) => ({
-      offset: state.startOffset + state.limit,
-      charList: state.charList.slice(0, state.limit),
-    }));
-  };
-
   render() {
     const { charList: chars, loading, error, newItemLoading, offset, charEnded } = this.state;
 
@@ -150,19 +120,6 @@ class CharList extends Component {
 
     return (
       <div className='char__list'>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
-          <button
-            className='button button__main button__long'
-            style={{ margin: '0' }}
-            onClick={() => {
-              this.onResetNumberOfCharacters(this.charsRefs.slice(0, 9));
-            }}>
-            <div className='inner'>reset number of characters</div>
-          </button>
-          <div style={{ fontSize: '30px', alignSelf: 'center' }}>
-            Number of characters: {chars.length}
-          </div>
-        </div>
         {errorMessage}
         {spinner}
         {content}
