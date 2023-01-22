@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -7,154 +7,151 @@ import MarvelService from '../../services/MarvelService';
 
 import './charList.scss';
 
-class CharList extends Component {
-  state = {
-    charList: [],
-    loading: true,
-    error: false,
-    newItemLoading: false,
-    startOffset: 360,
-    offset: 360,
-    charEnded: false,
-    limit: 9,
-  };
+const CharList = (props) => {
+  const [charList, setCharList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [newItemLoading, setNewItemLoading] = useState(false);
+  // eslint-disable-next-line
+  const [startOffset, setStartOffset] = useState(360);
+  const [offset, setOffset] = useState(360);
+  const [charEnded, setCharEnded] = useState(false);
+  // eslint-disable-next-line
+  const [limit, setLimit] = useState(9);
 
-  charsRefs = [];
-
-  marvelService = new MarvelService();
-
-  componentDidMount() {
-    this.onFirstLoading();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.onRequestByScroll);
-  }
-
-  setCharRef = (elem) => {
-    this.charsRefs.push(elem);
-  };
-
-  onFirstLoading = () => {
-    let limitInLS = +localStorage.getItem('limit');
-    if (limitInLS > 100) {
-      localStorage.setItem('limit', 100);
-      limitInLS = 100;
+  useEffect(() => {
+    if (newItemLoading) {
+      onRequest();
     }
+    // eslint-disable-next-line
+  }, [newItemLoading]);
 
-    const { startOffset, offset } = this.state;
-    if (limitInLS && limitInLS > 9 && startOffset === offset) {
-      this.onRequest(offset, limitInLS);
-    } else {
-      this.onRequest();
+  useEffect(() => {
+    if (startOffset === offset) {
+      onFirstLoading();
     }
+    // eslint-disable-next-line
+  }, []);
 
-    window.addEventListener('scroll', this.onRequestByScroll);
+  useEffect(() => {
+    window.addEventListener('scroll', onRequestByScroll);
+    return () => window.removeEventListener('scroll', onRequestByScroll);
+    // eslint-disable-next-line
+  }, [charList]);
+
+  const charsRefs = useRef([]);
+
+  const marvelService = new MarvelService();
+
+  const onCharListLoading = () => {
+    setNewItemLoading(true);
+    setError(false);
   };
 
-  onRequest = (offset, limit) => {
-    this.onCharListLoading();
-    this.marvelService
-      .getAllCharacters(offset, limit)
-      .then((newCharList) => this.onCharListLoaded(newCharList, offset, limit))
-      .catch(this.onError);
-  };
-
-  onCharListLoading = () => {
-    this.setState({ newItemLoading: true, error: false });
-  };
-
-  onCharListLoaded = (newCharList, offset = this.state.offset, limit = this.state.limit) => {
-    let ended = false;
-    if (newCharList.length < limit) {
-      ended = true;
-      window.removeEventListener('scroll', this.onRequestByScroll);
-    }
-
-    this.setState(({ charList }) => {
-      const newArr = [...charList, ...newCharList];
-      localStorage.setItem('limit', newArr.length);
-      return {
-        charList: newArr,
-        loading: false,
-        error: false,
-        newItemLoading: false,
-        offset: offset + limit,
-        charEnded: ended,
-      };
-    });
-  };
-
-  onError = () => {
-    this.setState({
-      error: true,
-      loading: false,
-    });
-  };
-
-  // Scroll
-
-  onRequestByScroll = () => {
+  const onRequestByScroll = () => {
     if (
-      this.state.charList.length > 15 &&
+      charList.length > 15 &&
       window.pageYOffset + document.documentElement.clientHeight >=
         document.documentElement.scrollHeight - 1
     ) {
-      this.onRequest(this.state.offset);
+      setNewItemLoading(true);
     }
   };
 
-  render() {
-    const { charList: chars, loading, error, newItemLoading, offset, charEnded } = this.state;
+  const onCharListLoaded = (newCharList, limitParam = limit) => {
+    let ended = false;
+    if (newCharList.length < limitParam) {
+      ended = true;
+      window.removeEventListener('scroll', onRequestByScroll);
+    }
 
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? (
-      <List
-        chars={chars}
-        onCharSelected={this.props.onCharSelected}
-        setCharRef={this.setCharRef}
-        myRefs={this.charsRefs}
-      />
-    ) : null;
+    setCharList((charList) => {
+      const newArr = [...charList, ...newCharList];
+      localStorage.setItem('limit', newArr.length);
+      return newArr;
+    });
 
-    return (
-      <div className='char__list'>
-        {errorMessage}
-        {spinner}
-        {content}
-        <button
-          className='button button__main button__long'
-          disabled={newItemLoading}
-          style={{
-            display: charEnded ? 'none' : 'block',
-          }}
-          onClick={() => this.onRequest(offset)}>
-          <div className='inner'>load more</div>
-        </button>
-      </div>
-    );
-  }
-}
+    setLoading(false);
+    setError(false);
+    setNewItemLoading(false);
+    setOffset((offset) => offset + limitParam);
+    setCharEnded(ended);
+  };
+
+  const onError = () => {
+    setError(true);
+    setLoading(false);
+    setNewItemLoading(false);
+  };
+
+  const onRequest = (limit) => {
+    marvelService
+      .getAllCharacters(offset, limit)
+      .then((newCharList) => onCharListLoaded(newCharList, limit))
+      .catch(onError);
+  };
+
+  const onFirstLoading = () => {
+    let limitInLS = localStorage.getItem('limit');
+    if (limitInLS && +limitInLS > 9) {
+      limitInLS = +limitInLS;
+
+      if (limitInLS > 100) {
+        localStorage.setItem('limit', 100);
+        limitInLS = 100;
+      }
+
+      onRequest(limitInLS);
+    } else {
+      onRequest();
+    }
+  };
+
+  const errorMessage = error ? <ErrorMessage /> : null;
+  const spinner = loading ? <Spinner /> : null;
+  const content = !(loading || error) ? (
+    <List
+      chars={charList}
+      onCharSelected={props.onCharSelected}
+      myRefs={charsRefs}
+    />
+  ) : null;
+
+  return (
+    <div className='char__list'>
+      {errorMessage}
+      {spinner}
+      {content}
+      <button
+        className='button button__main button__long'
+        disabled={newItemLoading}
+        style={{
+          display: charEnded ? 'none' : 'block',
+        }}
+        onClick={onCharListLoading}>
+        <div className='inner'>load more</div>
+      </button>
+    </div>
+  );
+};
 
 CharList.propTypes = {
   onCharSelected: PropTypes.func,
 };
 
-const List = ({ chars, onCharSelected, setCharRef, myRefs }) => {
-  const content = chars.map((char) => {
+const List = ({ chars, onCharSelected, myRefs }) => {
+  const content = chars.map((char, i) => {
     const { id, name, thumbnail } = char;
     return (
       <li
         key={id}
         tabIndex={0}
-        ref={setCharRef}
+        ref={(el) => (myRefs.current[i] = el)}
         onClick={(e) => onCharSelected(id, e.currentTarget, myRefs)}
         onKeyPress={(e) => {
           if (e.key === ' ' || e.key === 'Enter') {
             e.preventDefault();
             onCharSelected(id, e.currentTarget, myRefs);
-            console.log(myRefs);
           }
         }}
         className='char__item'>
