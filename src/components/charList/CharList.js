@@ -28,7 +28,7 @@ const CharList = (props) => {
 
   useEffect(() => {
     if (startOffset === offset) {
-      onFirstLoading();
+      firstLoading();
     }
     // eslint-disable-next-line
   }, []);
@@ -91,7 +91,7 @@ const CharList = (props) => {
       .catch(onError);
   };
 
-  const onFirstLoading = () => {
+  const firstLoading = () => {
     let limitInLS = localStorage.getItem('limit');
     if (limitInLS && +limitInLS > 9) {
       limitInLS = +limitInLS;
