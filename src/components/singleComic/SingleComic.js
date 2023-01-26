@@ -5,7 +5,6 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
 
 import './singleComic.scss';
-import xMen from '../../resources/img/x-men.png';
 
 const SingleComic = (props) => {
   const { comicId } = props;

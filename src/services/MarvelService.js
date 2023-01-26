@@ -42,7 +42,7 @@ const useMarvelService = () => {
     const language =
       comic.textObjects.length > 0
         ? comic.textObjects.map((item) => item.language).join(', ')
-        : 'NOT INFO';
+        : 'NO INFO';
     const price = +comic.prices[0].price === 0 ? 'NOT AVAILABLE' : comic.prices[0].price + '$';
     return { id, href, thumbnail, name, description, pageCount, language, price };
   };
