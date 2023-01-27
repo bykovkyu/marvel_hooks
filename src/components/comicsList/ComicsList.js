@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 import useMarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -90,13 +91,13 @@ const ComicsList = () => {
 };
 
 const List = (props) => {
-  const content = props.comicsList.map((comic) => {
-    const { id, href, thumbnail, name, price } = comic;
+  const content = props.comicsList.map((comic, i) => {
+    const { id, thumbnail, name, price } = comic;
     return (
       <li
-        key={id}
+        key={i}
         className='comics__item'>
-        <a href={href}>
+        <Link to={`/comics/${id}`}>
           <img
             src={thumbnail}
             alt='name'
@@ -104,7 +105,7 @@ const List = (props) => {
           />
           <div className='comics__item-name'>{name}</div>
           <div className='comics__item-price'>{price}</div>
-        </a>
+        </Link>
       </li>
     );
   });
