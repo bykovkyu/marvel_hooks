@@ -50,7 +50,12 @@ const CharList = (props) => {
     }
   };
 
-  const onCharListLoaded = (newCharList, limitParam = limit) => {
+  const onCharListLoaded = async (newCharList, limitParam = limit) => {
+    const { logger, secondLog } = await import('./someFunc');
+    logger();
+    secondLog();
+    import('./someFunc').then((obj) => obj.default());
+
     let ended = false;
     if (newCharList.length < limitParam) {
       ended = true;
@@ -96,6 +101,12 @@ const CharList = (props) => {
 
   const errorMessage = error ? <ErrorMessage /> : null;
   const spinner = loading && !newItemLoading ? <Spinner /> : null;
+
+  if (loading) {
+    import('./someFunc')
+      .then((obj) => obj.logger())
+      .catch(console.log);
+  }
   /* 
   console.log('NEW RENDER');
   console.log('---------------------------------');
