@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import { MainPage, ComicsPage } from '../pages'; // from '../pages' - ищет файл index.js
 
@@ -12,18 +12,16 @@ const App = () => {
       <div className='app'>
         <AppHeader />
         <main>
-          <Switch>
+          <Routes>
             <Route
-              exact
-              path='/'>
-              <MainPage />
-            </Route>
+              path='/'
+              element={<MainPage />}
+            />
             <Route
-              exact
-              path='/comics'>
-              <ComicsPage />
-            </Route>
-          </Switch>
+              path='/comics'
+              element={<ComicsPage />}
+            />
+          </Routes>
           {/* <SingleComic comicId={23348} /> */}
         </main>
       </div>
