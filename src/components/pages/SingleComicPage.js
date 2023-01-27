@@ -62,7 +62,7 @@ const View = ({ comic }) => {
         style={{ cursor: 'pointer' }}
         onClick={() => navigate(-1)}
         className='single-comic__back'>
-        Back to back
+        Go to back
       </div>
     </div>
   );
