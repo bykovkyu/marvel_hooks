@@ -1,6 +1,6 @@
 import { useHttp } from '../hooks/http.hook';
 
-import marvelIgm from '../resources/img/marvel.jpg';
+// import marvelIgm from '../resources/img/marvel.jpg';
 
 const useMarvelService = () => {
   const { loading, request, error, clearError } = useHttp();
@@ -17,6 +17,11 @@ const useMarvelService = () => {
 
   const getCharacter = async (id) => {
     const res = await request(`${_apiBase}characters/${id}?${_apiKey}`);
+    return _transformCharacter(res.data.results[0]);
+  };
+
+  const getCharacterByName = async (name) => {
+    const res = await request(`${_apiBase}characters?name=${name}&${_apiKey}`);
     return _transformCharacter(res.data.results[0]);
   };
 
@@ -57,9 +62,9 @@ const useMarvelService = () => {
 
     let thumbnail = `${char.thumbnail.path}.${char.thumbnail.extension}`;
 
-    if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
-      thumbnail = marvelIgm;
-    }
+    // if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+    //   thumbnail = marvelIgm;
+    // }
 
     let name = char.name;
     if (name.length > 30) {
@@ -77,7 +82,16 @@ const useMarvelService = () => {
     };
   };
 
-  return { loading, error, clearError, getAllCharacters, getCharacter, getAllComics, getComic };
+  return {
+    loading,
+    error,
+    clearError,
+    getAllCharacters,
+    getCharacter,
+    getCharacterByName,
+    getAllComics,
+    getComic,
+  };
 };
 
 export default useMarvelService;

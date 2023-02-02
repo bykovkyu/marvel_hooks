@@ -5,12 +5,10 @@ import { useOutlet, Outlet } from 'react-router-dom';
 const ComicsPage = () => {
   const outlet = useOutlet();
 
-  return outlet ? (
-    <Outlet />
-  ) : (
+  return (
     <>
       <AppBanner />
-      <ComicsList />
+      {outlet ? <Outlet /> : <ComicsList />}
     </>
   );
 };

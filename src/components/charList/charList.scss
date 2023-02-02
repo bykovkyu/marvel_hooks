@@ -8,6 +8,13 @@
     column-gap: 25px;
     align-items: start;
   }
+  &__side-block {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    row-gap: 30px;
+    top: 15px;
+    z-index: 5;
+  }
   &__grid {
     display: grid;
     grid-template-columns: repeat(3, 200px);

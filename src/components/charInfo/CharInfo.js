@@ -40,12 +40,7 @@ const CharInfo = (props) => {
   // console.log('render');
 
   return (
-    <div
-      className='char__info'
-      style={{
-        maxHeight: `${document.documentElement.clientHeight - 30}px`,
-        overflow: 'auto',
-      }}>
+    <div className='char__info'>
       {skeleton}
       {errorMessage}
       {spinner}
