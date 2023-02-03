@@ -1,47 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-
-import useMarvelService from '../../../services/MarvelService';
-import ErrorMessage from '../../errorMessage/ErrorMessage';
-import Spinner from '../../spinner/Spinner';
+import { useNavigate } from 'react-router-dom';
 
 import './singleComicPage.scss';
 
-const SingleComicPage = () => {
-  const { comicId } = useParams();
-
-  const [comic, setComic] = useState({});
-  const { loading, error, clearError, getComic } = useMarvelService();
-
-  useEffect(() => {
-    updateComic();
-    //eslint-disable-next-line
-  }, [comicId]);
-
-  const updateComic = () => {
-    clearError();
-    getComic(comicId).then(onComicLoaded);
-  };
-
-  const onComicLoaded = (comic) => {
-    setComic(comic);
-  };
-
-  const errorMessage = error ? <ErrorMessage /> : null;
-  const spinner = loading ? <Spinner /> : null;
-  const content = !(error || loading || !comic) ? <View comic={comic} /> : null;
-
-  return (
-    <>
-      {errorMessage}
-      {spinner}
-      {content}
-    </>
-  );
-};
-
-const View = ({ comic }) => {
-  const { thumbnail, name, description, pageCount, language, price } = comic;
+const SingleComicPage = ({ data }) => {
+  const { thumbnail, name, description, pageCount, language, price } = data;
   const navigate = useNavigate();
 
   return (

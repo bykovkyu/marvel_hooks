@@ -32,7 +32,7 @@ const CharSearchForm = () => {
     <div className='search-form__result'>
       <div className='search-form__result_found'>There is! Visit {char.name} page?</div>
       <Link
-        to={`/${name}`}
+        to={`/characters/${char.id}`}
         className='button button__secondary search-form__result-btn'>
         <div className='inner'>TO PAGE</div>
       </Link>
@@ -59,8 +59,10 @@ const CharSearchForm = () => {
         resetForm();
       }}
       validate={() => {
-        setFound(true);
-        setChar(null);
+        if (!found || char) {
+          setFound(true);
+          setChar(null);
+        }
       }}>
       <div className='search-form'>
         <Form className='search-form__form'>
