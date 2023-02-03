@@ -1,17 +1,17 @@
 import './singleCharPage.scss';
 
 const SingleCharPage = ({ data }) => {
-  const { name, thumbnail, description } = data;
+  const { fullname, thumbnail, description } = data;
   return (
     <>
       <div className='single-char'>
         <img
           src={thumbnail}
-          alt={name}
+          alt={fullname}
           className='single-char__img'
         />
         <div className='single-char__info'>
-          <h2 className='single-char__name'>{name}</h2>
+          <h2 className='single-char__name'>{fullname}</h2>
           <p className='single-char__descr'>{description}</p>
         </div>
       </div>

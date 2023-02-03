@@ -21,8 +21,8 @@ const useMarvelService = () => {
   };
 
   const getCharacterByName = async (name) => {
-    const res = await request(`${_apiBase}characters?name=${name}&${_apiKey}`);
-    return _transformCharacter(res.data.results[0]);
+    const res = await request(`${_apiBase}characters?nameStartsWith=${name}&${_apiKey}`);
+    return res.data.results.map(_transformCharacter);
   };
 
   const getAllComics = async (offset = 100, limit = 8) => {
@@ -70,10 +70,12 @@ const useMarvelService = () => {
     if (name.length > 30) {
       name = `${name.match(/.{25}.*?\b/)}...`;
     }
+    const fullname = char.name;
 
     return {
       id: char.id,
       name,
+      fullname,
       description,
       thumbnail,
       homepage: char.urls[0].url,
