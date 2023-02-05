@@ -29,10 +29,11 @@ const CharSearchForm = () => {
       <Formik
         initialValues={{ results: '' }}
         validationSchema={Yup.object({
-          results: Yup.string().required('This field is required'),
+          results: Yup.string().required('This field is required').min(1, 'dsf'),
         })}
+        validateOnBlur={false}
         onSubmit={({ results }) => {
-          /* if (results !== '') */ navigate(`/characters/${results}`);
+          navigate(`/characters/${results}`);
         }}>
         <Form className='search-form__results-form'>
           <Field
@@ -51,7 +52,7 @@ const CharSearchForm = () => {
               .filter(
                 (char) =>
                   char.thumbnail !==
-                    'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' &&
+                    'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ||
                   char.description !== 'NO DESCRIPTION'
               )
               .map((char) => (
@@ -68,6 +69,11 @@ const CharSearchForm = () => {
             type='submit'>
             <div className='inner'>TO PAGE</div>
           </button>
+          <ErrorMessage
+            className='search-form__error'
+            name={'results'}
+            component={'div'}
+          />
         </Form>
       </Formik>
     </div>
@@ -87,6 +93,7 @@ const CharSearchForm = () => {
       validationSchema={Yup.object({
         charName: Yup.string().required('This field is required'),
       })}
+      validateOnBlur={false}
       onSubmit={({ charName }) => {
         updateChar(charName);
       }}>

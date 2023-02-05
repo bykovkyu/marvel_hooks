@@ -1,9 +1,18 @@
+import { Helmet } from 'react-helmet';
+
 import './singleCharPage.scss';
 
 const SingleCharPage = ({ data }) => {
   const { fullname, thumbnail, description } = data;
   return (
     <>
+      <Helmet>
+        <meta
+          name='description'
+          content={`${fullname} character page`}
+        />
+        <title>{fullname}</title>
+      </Helmet>
       <div className='single-char'>
         <img
           src={thumbnail}
